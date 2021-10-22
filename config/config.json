@@ -1,0 +1,9 @@
+{
+  "redis_host": "redis",
+  "redis_port": 6379,
+  "redis_db": 0,
+  "t_model_path": "/app/models/upc_ona_tacotron2.pt",
+  "v_model_path": "/app/models/melgan_onapau_catotron.pt",
+  "cuda": "1",
+  "monitor_log": "/app/logs/monitor_log.txt"
+}

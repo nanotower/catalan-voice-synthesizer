@@ -1,0 +1,45 @@
+version: "3.9"
+services:
+  voice:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+
+    image: voice-synth-cat:v1
+    container_name: voice
+    networks:
+      - internal
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    volumes:
+      - ./logs:/app/logs 
+    deploy:
+      # replicas: 1
+      # update_config:
+      #   parallelism: 1
+      #   delay: 1s
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: vip
+      resources:
+              reservations:
+                devices:
+                - capabilities: [gpu]
+
+
+  redis:
+    image: redis:latest
+    command: bash -c "redis-server --appendonly yes"
+    container_name: redis
+    networks:
+      - internal
+    volumes:
+      - ./redis-volume:/data
+    deploy:
+      replicas: 1
+      endpoint_mode: vip
+
+networks:
+  internal:

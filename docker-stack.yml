@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  voice:
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    image: voice-synth-cat-gpu:v1
+    container_name: voice
+    networks:
+      - internal
+    ports:
+      - "8080:8080"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    depends_on:
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    deploy:
+      replicas: 1
+      update_config:
+         parallelism: 1
+         delay: 1s
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: vip
+  redis:
+    image: redis:latest
+    command: bash -c "redis-server --appendonly yes"
+    container_name: redis
+    networks:
+      - internal
+    volumes:
+      - ./redis-volume:/data
+    deploy:
+      replicas: 1
+      endpoint_mode: vip
+networks:
+  internal:
